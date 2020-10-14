@@ -43,7 +43,7 @@ describe('MySQL with nulls for missing option', () => {
 
 describe('MySQL without nulls for missing option', () => {
   it('Missing parameter error', () => {
-    let errorMessage: string;
+    let errorMessage = '';
     try {
       const query = 'SELECT * FROM users WHERE username = :username;';
       mySqlQueryBuilder(query, user, {useNullForMissing: false});
