@@ -2,12 +2,12 @@
   "name": "mysql-query-placeholders",
   "version": "0.1.1",
   "description": "Build prepared statements from named parameters.",
-  "main": "build/queryPlaceholders.js",
+  "main": "build/mqp.js",
   "keywords": [
-    "named",
-    "parameter",
     "prepared",
     "statement",
+    "named",
+    "parameter",
     "query",
     "object",
     "sql",
@@ -19,11 +19,10 @@
     "clean": "gts clean",
     "compile": "tsc",
     "fix": "gts fix",
-    "prepare": "npm run compile",
+    "prepare": "npm run clean && npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run check",
-    "dev": "ts-node-dev -T --respawn node_modules/mocha/bin/mocha *.spec.ts",
-    "start": "node build/index"
+    "dev": "ts-node-dev -T --respawn node_modules/mocha/bin/mocha *.spec.ts"
   },
   "repository": {
     "type": "git",
@@ -59,5 +58,6 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  }
+  },
+  "files": ["build/"]
 }

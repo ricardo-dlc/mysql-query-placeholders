@@ -7,7 +7,7 @@ interface MySqlQueryData<T, K extends keyof T> {
   values: Array<T[K] | null>;
 }
 
-export const mySqlQueryBuilder = <T, K extends keyof T>(
+export const queryBuilder = <T, K extends keyof T>(
   query: string,
   data?: T,
   options: ReplaceOptions = {useNullForMissing: true}
@@ -20,9 +20,9 @@ export const mySqlQueryBuilder = <T, K extends keyof T>(
     };
   }
   return {
-    sql: query.replace(/(::?)([a-zA-Z0-9_]+)/g, (_, prefix, key) => {
-      if (key in data) {
-        const value = (data as T)[key as K];
+    sql: query.replace(/(::?)([\w.]+)(\.?)/g, (_, prefix, key) => {
+      const value: T[K] | undefined = getObjectValue(data, key);
+      if (value) {
         values.push(value);
         return prefix.replace(/:/g, '?');
       } else if (options.useNullForMissing) {
@@ -34,6 +34,29 @@ export const mySqlQueryBuilder = <T, K extends keyof T>(
     }),
     values,
   };
+};
+
+const getObjectValue = <T, K extends keyof T>(
+  object: T,
+  keyName: string
+): T[K] | undefined => {
+  const keys = keyName.split('.');
+  if (keys.length === 1) {
+    if (typeof object === 'object') {
+      if (keys[0] in (object as T)) {
+        return (object as T)[keys[0] as K];
+      }
+      return undefined;
+    }
+    return undefined;
+  } else {
+    const [parentKey, ...restElements] = keys;
+    if (!object) return undefined;
+    return (getObjectValue(
+      (object as T)[parentKey as K],
+      restElements.join('.')
+    ) as unknown) as T[K];
+  }
 };
 
 const errorMissingValue = <T>(key: string, query: string, data: T) => {
