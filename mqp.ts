@@ -2,17 +2,17 @@ interface ReplaceOptions {
   useNullForMissing: boolean;
 }
 
-interface MySqlQueryData<T, K extends keyof T> {
+interface MySqlQueryData {
   sql: string;
-  values: Array<T[K] | null>;
+  values: Array<unknown>;
 }
 
-export const queryBuilder = <T, K extends keyof T>(
+export const queryBuilder = <T>(
   query: string,
   data?: T,
   options: ReplaceOptions = {useNullForMissing: true}
-): MySqlQueryData<T, K> => {
-  const values: Array<T[K] | null> = [];
+): MySqlQueryData => {
+  const values: Array<unknown> = [];
   if (!data) {
     return {
       sql: query,
@@ -21,8 +21,8 @@ export const queryBuilder = <T, K extends keyof T>(
   }
   return {
     sql: query.replace(/(::?)([\w.]+)(\.?)/g, (_, prefix, key) => {
-      const value: T[K] | undefined = getObjectValue(data, key);
-      if (value) {
+      const value = getObjectValue(data, key);
+      if (typeof value !== 'undefined' && value !== null) {
         values.push(value);
         return prefix.replace(/:/g, '?');
       } else if (options.useNullForMissing) {
