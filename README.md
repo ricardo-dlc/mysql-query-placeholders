@@ -2,7 +2,7 @@
 
 # mysql-query-placeholders
 
-## Build prepared statements from named parameters.
+### Build prepared statements from named parameters.
 Consider the following object:
 
 ```javascript
@@ -89,16 +89,16 @@ try {
   //   ...
 }
 ```
-## Use of deeper object property values
+## Support for multiple level object property values
 mqp is capable to get a object property value from a key.name.property.value syntax.
 This is useful when you do not want to reassign the property value to another variable or you want to use the original object instead of creating a new one.
 ```javascript
-const query = 'SELECT * FROM services WHERE route = :services.dashboard.route;';
+const query = 'SELECT * FROM services WHERE route IN (:services.dashboard.route, :services.home.route);';
 const queryData = mqp.queryBuilder(query, user);
 console.log(queryData);
 // {
-//   sql: 'SELECT * FROM services WHERE route = ?;',
-//   values: [ '/dashboard' ]
+//   sql: 'SELECT * FROM services WHERE route IN (?, ?);',
+//   values: [ '/dashboard', '/' ]
 // }
 ```
 
@@ -113,11 +113,11 @@ console.log(queryData);
 // }
 ```
 
-Or using `{useNullForMissing:false}` config:
+Or using `{useNullForMissing: false}` config:
 ```javascript
 try {
   const query = 'SELECT * FROM services WHERE route = :services.cpanel.route;';
- const queryData = mqp.queryBuilder(query, user, {useNullForMissing: false});
+  const queryData = mqp.queryBuilder(query, user, {useNullForMissing: false});
 } catch (e) {
   errorMessage = e.message;
   console.log(errorMessage);
