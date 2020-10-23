@@ -6,7 +6,7 @@ import 'mocha';
 const user = {
   id: 123,
   status: {
-    active: true,
+    active: false,
   },
   services: {
     home: {
@@ -59,6 +59,15 @@ describe('MySQL with nulls for missing option in one or more level object value'
     assert.deepEqual(queryData, {
       sql: 'INSERT INTO users (email, default_route) VALUES (?, ?);',
       values: ['email@mail.com', '/dashboard'],
+    });
+  });
+
+  it('MySQL with false value instead of null when boolean value', () => {
+    const query = 'UPDATE users SET active = :status.active WHERE id = :id;';
+    const queryData = queryBuilder(query, user);
+    assert.deepEqual(queryData, {
+      sql: 'UPDATE users SET active = ? WHERE id = ?;',
+      values: [false, 123],
     });
   });
 });
